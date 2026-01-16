@@ -565,7 +565,8 @@ static int ecx_map_sii(ecx_contextt *context, uint16 slave)
    {
       (void)ecx_lookup_mapping(context, slave, &Osize, &Isize);
    }
-   if (!Isize && !Osize) /* find PDO mapping by SII */
+   /* If either direction is missing, try SII mapping for just that direction. */
+   if (!Isize) /* find input PDO mapping by SII */
    {
       memset(&eepPDO, 0, sizeof(eepPDO));
       Isize = ecx_siiPDO(context, slave, &eepPDO, 0);
@@ -579,6 +580,10 @@ static int ecx_map_sii(ecx_contextt *context, uint16 slave)
             EC_PRINT("    SM%d length %d\n", nSM, eepPDO.SMbitsize[nSM]);
          }
       }
+   }
+   if (!Osize) /* find output PDO mapping by SII */
+   {
+      memset(&eepPDO, 0, sizeof(eepPDO));
       Osize = ecx_siiPDO(context, slave, &eepPDO, 1);
       EC_PRINT("  SII Osize:%u\n", Osize);
       for (nSM = 0; nSM < EC_MAXSM; nSM++)
